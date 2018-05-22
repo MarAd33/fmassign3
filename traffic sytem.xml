@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock x;
+chan free_nustChowk,Pass_from_nustchowk;</declaration>
+	<template>
+		<name x="5" y="5">trafficlight</name>
+		<declaration>// Place local declarations here.
+</declaration>
+		<location id="id0" x="-232" y="-232">
+			<name x="-246" y="-280">Red</name>
+			<label kind="invariant" x="-246" y="-263">x&lt;=15</label>
+		</location>
+		<location id="id1" x="-232" y="-64">
+			<name x="-248" y="-104">Green</name>
+			<label kind="invariant" x="-242" y="-49">x&lt;=6</label>
+		</location>
+		<location id="id2" x="-384" y="-128">
+			<name x="-433" y="-136">begin</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-348" y="-204">x&gt;=15</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-214" y="-138">x&gt;=6</label>
+			<label kind="synchronisation" x="-161" y="-178">free_nustChowk!</label>
+			<nail x="-161" y="-144"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-425" y="-68">Pass_from_nustchowk!</label>
+			<label kind="assignment" x="-368" y="-96">x:=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>NustChowk</name>
+		<location id="id3" x="112" y="-8">
+			<name x="102" y="-38">take</name>
+		</location>
+		<location id="id4" x="-192" y="-8">
+			<name x="-202" y="-38">free</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-112" y="8">free_nustChowk?</label>
+			<nail x="-32" y="72"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-112" y="-64">Pass_from_nustchowk?</label>
+			<nail x="-36" y="-129"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Process1 = trafficlight();
+Process2 = trafficlight();
+Process3 = trafficlight();
+Process4 = trafficlight();
+// List one or more processes to be composed into a system.
+system Process1,Process2,Process3,Process4,NustChowk;</system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt;(Process1.Green||Process2.Green||Process3.Green||Process4.Green)
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt;!(Process1.Green &amp;&amp; Process2.Green)
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt;!(Process1.Green &amp;&amp; NustChowk.take)
+			</formula>
+			<comment>
+			</comment>
+		</query>
+	</queries>
+</nta>
